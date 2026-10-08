@@ -1,880 +1,194 @@
-# AWS Lambda – Complete Master Guide (Interview + Hands-On + Projects)
+# AWS Lambda – Short Notes & Hands-On Guide
 
-## 1. What is AWS Lambda?
+Topics: Introduction to AWS Lambda | Creating a Lambda Function | Testing | Monitoring | AWS CLI
 
-AWS Lambda is a **Serverless Compute Service** that allows you to run code without provisioning or managing servers.
+## 1. Introduction to AWS Lambda
 
-You upload your code, Lambda executes it automatically when triggered by an event.
+AWS Lambda is a serverless compute service that runs code without managing servers. It automatically scales based on incoming events.
 
-### Key Features
+| Feature            | Description                                                                  |
+| ------------------ | ---------------------------------------------------------------------------- |
+| Service Type       | Serverless Compute                                                           |
+| Server Management  | Managed by AWS                                                               |
+| Execution          | Event-driven                                                                 |
+| Supported Runtimes | Python, Node.js, Java, .NET and others                                       |
+| Maximum Timeout    | 15 minutes (900 seconds)                                                     |
+| Memory             | 128 MB – 10,240 MB                                                           |
+| Scaling            | Automatic, subject to concurrency limits                                     |
+| Pricing            | Based on requests and execution duration, with additional applicable charges |
+| Monitoring         | Amazon CloudWatch                                                            |
+| Permissions        | AWS IAM Execution Role                                                       |
 
-| Feature           | Description                           |
-| ----------------- | ------------------------------------- |
-| Serverless        | No server management                  |
-| Auto Scaling      | Scales automatically                  |
-| Pay Per Use       | Charged only when code runs           |
-| Event Driven      | Triggered by AWS services             |
-| High Availability | Built-in by AWS                       |
-| Multi Language    | Python, Node.js, Java, .NET, Go, Ruby |
+## 2. AWS Lambda Architecture
 
----
+Execution Flow: Event → Lambda Trigger → Function Execution → AWS Service/Response → CloudWatch Logs
 
-## AWS Lambda Architecture
+## 3. Important Terms & Definitions
 
-```text
-               User Request
-                     │
-                     ▼
-             API Gateway
-                     │
-                     ▼
-               AWS Lambda
-                     │
-        ┌────────────┼────────────┐
-        ▼            ▼            ▼
-      DynamoDB      S3          SNS
+| Term           | Definition                                    |
+| -------------- | --------------------------------------------- |
+| Function       | Code deployed to AWS Lambda                   |
+| Runtime        | Environment used to execute code              |
+| Handler        | Entry point of the function                   |
+| Trigger        | Event source that invokes Lambda              |
+| Event          | Input data passed to the function             |
+| Context        | Runtime information about execution           |
+| Execution Role | IAM role defining AWS permissions             |
+| Timeout        | Maximum execution time                        |
+| Concurrency    | Number of simultaneous executions             |
+| Cold Start     | Initialization of a new execution environment |
+| Layer          | Reusable dependencies shared with functions   |
+
+## 4. Steps to Create a Lambda Function
+
+1. Open AWS Console → Lambda.
+2. Click Create function.
+3. Select Author from scratch.
+4. Enter function name: `my-lambda-function`.
+5. Select runtime: Python 3.13.
+6. Architecture: x86_64.
+7. Choose Create a new role with basic Lambda permissions.
+8. Click Create function.
+9. Add Python code and click Deploy.
+10. Open Test → Create new event → Test.
+
+## 5. Python Lambda Function Code
+
+File: `lambda_function.py`
+
+```
+import jsondef lambda_handler(event, context):    return {        "statusCode": 200,        "body": json.dumps({            "message": "Hello from AWS Lambda!"        })    }
 ```
 
----
+### Test Event
 
-## Lambda Execution Flow
-
-```text
-Event Occurs
-      │
-      ▼
-Trigger Generated
-      │
-      ▼
-Lambda Invoked
-      │
-      ▼
-Code Execution
-      │
-      ▼
-Response Returned
 ```
-
----
-
-## AWS Lambda Use Cases
-
-### 1. Website Backend
-
-```text
-User
- │
- ▼
-API Gateway
- │
- ▼
-Lambda
- │
- ▼
-DynamoDB
-```
-
----
-
-### 2. Image Processing
-
-```text
-Upload Image to S3
-        │
-        ▼
-S3 Event
-        │
-        ▼
-Lambda
-        │
-        ▼
-Resize Image
-        │
-        ▼
-Store in Another Bucket
-```
-
----
-
-### 3. Log Processing
-
-```text
-CloudWatch Logs
-       │
-       ▼
-Lambda
-       │
-       ▼
-Elasticsearch/OpenSearch
-```
-
----
-
-### 4. Automated Notifications
-
-```text
-EventBridge
-      │
-      ▼
-Lambda
-      │
-      ▼
-SNS
-      │
-      ▼
-Email/SMS
-```
-
----
-
-# AWS Lambda Components
-
-```text
-AWS Lambda
-│
-├── Function
-├── Runtime
-├── Trigger
-├── Layer
-├── Environment Variables
-├── IAM Role
-├── Destination
-└── Monitoring
-```
-
----
-
-## Lambda Function
-
-A Lambda Function contains:
-
-```text
-Code
-+
-Configuration
-+
-Execution Role
-```
-
-Example:
-
-```python
-def lambda_handler(event, context):
-    return {
-        'statusCode': 200,
-        'body': 'Hello World'
-    }
-```
-
----
-
-## Supported Runtimes
-
-| Runtime        | Supported |
-| -------------- | --------- |
-| Python         | Yes       |
-| Node.js        | Yes       |
-| Java           | Yes       |
-| Go             | Yes       |
-| Ruby           | Yes       |
-| .NET           | Yes       |
-| Custom Runtime | Yes       |
-
----
-
-# AWS Lambda Pricing Model
-
-```text
-Cost =
-Requests
-+
-Execution Duration
-```
-
-### Free Tier
-
-* 1 Million Requests/month
-* 400,000 GB-seconds
-
----
-
-## Lambda Lifecycle
-
-```text
-Request
-   │
-   ▼
-Cold Start
-   │
-   ▼
-Initialization
-   │
-   ▼
-Execution
-   │
-   ▼
-Response
-```
-
----
-
-## Cold Start
-
-When Lambda creates a new execution environment.
-
-### Causes
-
-* First invocation
-* Scaling out
-* Inactive function
-
-### Reduce Cold Starts
-
-* Provisioned Concurrency
-* Smaller Packages
-* Efficient Code
-
----
-
-# AWS Lambda Limits
-
-| Item                  | Limit          |
-| --------------------- | -------------- |
-| Timeout               | 15 Minutes     |
-| Memory                | 128 MB – 10 GB |
-| Ephemeral Storage     | Up to 10 GB    |
-| Deployment Package    | 50 MB ZIP      |
-| Concurrent Executions | 1000 (Default) |
-
----
-
-# Lambda Triggers
-
-## Common Triggers
-
-```text
-S3
-API Gateway
-EventBridge
-SNS
-SQS
-CloudWatch
-DynamoDB Streams
-Kinesis
-ALB
-```
-
----
-
-## Trigger Architecture
-
-```text
-          Event Sources
-
- S3      SNS      SQS
-  │        │        │
-  └────────┼────────┘
-           ▼
-       AWS Lambda
-           ▼
-       Process Data
-```
-
----
-
-# Lambda Layers
-
-Layers allow sharing libraries across functions.
-
-```text
-Lambda Function
-        │
-        ▼
-      Layer
-        │
-        ▼
-Python Packages
-Libraries
-Dependencies
-```
-
-Benefits:
-
-* Reusability
-* Smaller deployment packages
-* Easier updates
-
----
-
-# Environment Variables
-
-Store configuration securely.
-
-Example:
-
-```text
-DB_HOST
-DB_NAME
-API_KEY
-REGION
-```
-
-Access in Python:
-
-```python
-import os
-
-db = os.environ['DB_HOST']
-```
-
----
-
-# IAM Role for Lambda
-
-Lambda requires permissions.
-
-Example:
-
-```json
 {
-  "Effect": "Allow",
-  "Action": [
-    "s3:GetObject"
-  ],
-  "Resource": "*"
+  "name": "Atul",
+  "service": "AWS Lambda"
 }
 ```
 
----
+### Expected Output
 
-# Lambda Monitoring
-
-Services Used:
-
-* Amazon CloudWatch
-* AWS X-Ray
-* CloudTrail
-
----
-
-## Monitoring Flow
-
-```text
-Lambda
-  │
-  ▼
-CloudWatch Logs
-  │
-  ▼
-Metrics
-  │
-  ▼
-Alarms
+```
+{
+  "statusCode": 200,
+  "body": "{\"message\": \"Hello from AWS Lambda!\"}"
+}
 ```
 
----
+## 6. AWS CLI Commands
 
-# Lambda vs EC2
+### Check AWS Configuration
 
-| Feature           | Lambda | EC2        |
-| ----------------- | ------ | ---------- |
-| Server Management | No     | Yes        |
-| Auto Scaling      | Yes    | Manual/ASG |
-| Pay Per Request   | Yes    | No         |
-| Startup Time      | Fast   | VM Boot    |
-| Long Running Apps | No     | Yes        |
-| OS Access         | No     | Yes        |
+```
+aws configure
+aws sts get-caller-identity
+```
 
----
+### Package Lambda Code
 
-# Lambda vs ECS
+```
+zip function.zip lambda_function.py
+```
 
-| Feature           | Lambda     | ECS       |
-| ----------------- | ---------- | --------- |
-| Serverless        | Yes        | Optional  |
-| Container Support | Limited    | Native    |
-| Runtime Control   | Limited    | Full      |
-| Execution Time    | 15 Minutes | Unlimited |
-| Microservices     | Excellent  | Excellent |
+### Create Lambda Function
 
----
+Requires an existing IAM execution role with a trust policy for `lambda.amazonaws.com`.
 
-# Lambda vs Kubernetes
-
-| Feature            | Lambda    | Kubernetes   |
-| ------------------ | --------- | ------------ |
-| Complexity         | Low       | High         |
-| Management         | AWS       | User         |
-| Scaling            | Automatic | Configurable |
-| Cost for Idle Apps | Zero      | Not Zero     |
-| Learning Curve     | Easy      | High         |
-
----
-
-# Lambda Hands-On Project 1
-
-## Hello World Lambda
-
-### Create Function
-
-```bash
+```
 aws lambda create-function \
---function-name hello-lambda \
---runtime python3.12 \
---handler lambda_function.lambda_handler \
---zip-file fileb://function.zip \
---role arn:aws:iam::ACCOUNT_ID:role/LambdaRole
+  --function-name my-lambda-function \
+  --runtime python3.13 \
+  --role arn:aws:iam::<ACCOUNT_ID>:role/lambda-role \
+  --handler lambda_function.lambda_handler \
+  --zip-file fileb://function.zip
 ```
 
----
+Replace `<ACCOUNT_ID>` with your AWS account ID and ensure `lambda-role` exists.
 
-### Invoke Function
+### List Functions
 
-```bash
-aws lambda invoke \
---function-name hello-lambda \
-output.json
 ```
-
----
-
-### View Output
-
-```bash
-cat output.json
-```
-
----
-
-# Lambda Hands-On Project 2
-
-## S3 File Upload Trigger
-
-Architecture
-
-```text
-Upload File
-    │
-    ▼
-S3 Bucket
-    │
- Event
-    ▼
-Lambda
-    │
-    ▼
-Log Filename
-```
-
-Python Code
-
-```python
-import json
-
-def lambda_handler(event, context):
-
-    for record in event['Records']:
-        bucket = record['s3']['bucket']['name']
-        key = record['s3']['object']['key']
-
-        print(bucket, key)
-
-    return {
-        'statusCode': 200
-    }
-```
-
----
-
-# Lambda Hands-On Project 3
-
-## API Gateway + Lambda + DynamoDB
-
-Architecture
-
-```text
-User
- │
- ▼
-API Gateway
- │
- ▼
-Lambda
- │
- ▼
-DynamoDB
-```
-
-Use Cases:
-
-* Student Management
-* Employee Portal
-* Inventory Application
-
----
-
-# Lambda Hands-On Project 4
-
-## Auto Stop EC2 Instances
-
-```text
-EventBridge
-      │
-      ▼
-Lambda
-      │
-      ▼
-Stop EC2
-```
-
-Python Example
-
-```python
-import boto3
-
-ec2 = boto3.client('ec2')
-
-def lambda_handler(event, context):
-
-    ec2.stop_instances(
-        InstanceIds=['i-123456']
-    )
-
-    return "Stopped"
-```
-
----
-
-# Important AWS CLI Commands
-
-## List Functions
-
-```bash
 aws lambda list-functions
 ```
 
----
+### Invoke Lambda
 
-## Get Function
+```
+aws lambda invoke \
+  --function-name my-lambda-function \
+  --payload '{}' \
+  --cli-binary-format raw-in-base64-out \
+  response.json
 
-```bash
+cat response.json
+```
+
+### View Function Configuration
+
+```
 aws lambda get-function \
---function-name hello-lambda
+  --function-name my-lambda-function
 ```
 
----
+### Update Function Code
 
-## Update Function Code
-
-```bash
+```
 aws lambda update-function-code \
---function-name hello-lambda \
---zip-file fileb://function.zip
+  --function-name my-lambda-function \
+  --zip-file fileb://function.zip
 ```
 
----
+### View CloudWatch Logs
 
-## Delete Function
-
-```bash
-aws lambda delete-function \
---function-name hello-lambda
 ```
-
----
-
-## View Logs
-
-```bash
-aws logs describe-log-groups
-```
-
----
-
-## Tail Logs
-
-```bash
 aws logs tail \
-/aws/lambda/hello-lambda \
---follow
+  /aws/lambda/my-lambda-function \
+  --follow
 ```
 
----
+### Delete Function
 
-# AWS Lambda Interview Questions
-
-### Q1. What is AWS Lambda?
-
-Serverless compute service that runs code in response to events.
-
----
-
-### Q2. What is a Cold Start?
-
-Delay caused when Lambda creates a new execution environment.
-
----
-
-### Q3. Maximum Lambda Timeout?
-
-15 Minutes.
-
----
-
-### Q4. Can Lambda Access VPC?
-
-Yes.
-
----
-
-### Q5. What is Lambda Layer?
-
-Reusable package of libraries and dependencies.
-
----
-
-### Q6. Difference Between Lambda and EC2?
-
-Lambda is serverless and event-driven; EC2 requires server management.
-
----
-
-### Q7. What Triggers Lambda?
-
-S3, SNS, SQS, API Gateway, EventBridge, DynamoDB Streams, Kinesis, ALB.
-
----
-
-### Q8. What is Provisioned Concurrency?
-
-Keeps Lambda environments warm to reduce cold starts.
-
----
-
-### Q9. Can Lambda Run Containers?
-
-Yes, using container images up to 10 GB.
-
----
-
-### Q10. How Does Lambda Scale?
-
-Automatically based on incoming events.
-
----
-
-# Scenario-Based Interview Questions
-
-### Scenario 1
-
-Users upload images to S3 and thumbnails must be created automatically.
-
-**Solution**
-
-```text
-S3
- │
- ▼
-Lambda
- │
- ▼
-Thumbnail
- │
- ▼
-S3
+```
+aws lambda delete-function \
+  --function-name my-lambda-function
 ```
 
----
+## 7. Common Lambda Triggers
 
-### Scenario 2
+| AWS Service      | Lambda Use Case           |
+| ---------------- | ------------------------- |
+| API Gateway      | Backend REST API          |
+| Amazon S3        | Process uploaded files    |
+| EventBridge      | Scheduled automation      |
+| DynamoDB Streams | React to database changes |
+| Amazon SQS       | Process queue messages    |
+| Amazon SNS       | Process notifications     |
 
-Stop development EC2 instances every night.
+## 8. Lambda vs EC2
 
-**Solution**
+| Feature           | Lambda              | EC2                       |
+| ----------------- | ------------------- | ------------------------- |
+| Compute           | Serverless          | Virtual Server            |
+| Server Management | AWS Managed         | Customer Managed          |
+| Scaling           | Automatic           | Manual / Auto Scaling     |
+| Execution Limit   | 15 minutes          | No fixed limit            |
+| Billing           | Requests + Duration | Instance usage            |
+| Best For          | Event-driven tasks  | Long-running applications |
 
-```text
-EventBridge Schedule
-         │
-         ▼
-      Lambda
-         │
-         ▼
-    Stop EC2
-```
+## 9. Points to Remember
 
----
+- Lambda is a serverless, event-driven compute service.
+- Maximum execution timeout is 900 seconds.
+- Lambda requires an IAM execution role.
+- Functions can be triggered by AWS services or invoked directly.
+- CloudWatch provides logs and execution metrics.
+- Lambda automatically scales, subject to concurrency quotas.
+- Avoid hardcoding credentials; use IAM roles and secure secret storage.
+- Lambda functions are stateless; use external storage for persistent data.
+- Lambda can integrate with API Gateway, S3, DynamoDB, SQS and SNS.
+- Always test the function and check CloudWatch logs.
 
-### Scenario 3
-
-Process millions of messages.
-
-**Solution**
-
-```text
-SQS
- │
- ▼
-Lambda
- │
- ▼
-Database
-```
-
----
-
-### Scenario 4
-
-Build serverless REST API.
-
-**Solution**
-
-```text
-API Gateway
-      │
-      ▼
-Lambda
-      │
-      ▼
-DynamoDB
-```
-
----
-
-### Scenario 5
-
-Audit all AWS account activities.
-
-**Solution**
-
-```text
-CloudTrail
-     │
-     ▼
-EventBridge
-     │
-     ▼
-Lambda
-     │
-     ▼
-SNS Alert
-```
-
----
-
-# Architecture Patterns
-
-## 1. Event Driven Architecture
-
-```text
-S3/SNS/SQS
-     │
-     ▼
- Lambda
-     │
-     ▼
-Processing
-```
-
----
-
-## 2. Serverless Web Application
-
-```text
-CloudFront
-    │
-    ▼
-API Gateway
-    │
-    ▼
-Lambda
-    │
-    ▼
-DynamoDB
-```
-
----
-
-## 3. Data Processing Pipeline
-
-```text
-Kinesis
-   │
-   ▼
-Lambda
-   │
-   ▼
-S3
-   │
-   ▼
-Athena
-```
-
----
-
-# Points to Remember for Interviews
-
-✅ Lambda = Serverless Compute
-
-✅ Maximum Timeout = 15 Minutes
-
-✅ Auto Scaling
-
-✅ Event Driven
-
-✅ Supports VPC
-
-✅ Uses IAM Roles
-
-✅ Cold Starts Exist
-
-✅ Layers Share Dependencies
-
-✅ Provisioned Concurrency Reduces Cold Starts
-
-✅ API Gateway + Lambda + DynamoDB = Most Popular Serverless Architecture
-
-✅ CloudWatch = Monitoring
-
-✅ EventBridge = Scheduling
-
----
-
-# Real-World Project for Resume
-
-### Serverless Student Management System
-
-```text
-Frontend (React)
-       │
-       ▼
-API Gateway
-       │
-       ▼
-Lambda
-       │
-       ▼
-DynamoDB
-       │
-       ▼
-CloudWatch
-```
-
-Features:
-
-* Student CRUD Operations
-* Authentication
-* Logging
-* Monitoring
-* Auto Scaling
-* Serverless Architecture
-
-This is an excellent AWS DevOps / Solutions Architect interview project because it covers Lambda, API Gateway, IAM, DynamoDB, CloudWatch, and EventBridge in one end-to-end architecture.
-
-
-Lambda vs EC2 Operational Effort
-
-Relative infrastructure management effort.
-
-service	effort
-Lambda	1
-EC2	10
+Hands-on practice: Create a Python Lambda function → Deploy → Test with JSON → Verify output → Check CloudWatch logs → Invoke using AWS CLI → Delete the function.
