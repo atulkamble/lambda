@@ -1,4 +1,4 @@
-# AWS Lambda – Short Notes & Hands-On Guide
+# AWS Lambda
 
 Topics: Introduction to AWS Lambda | Creating a Lambda Function | Testing | Monitoring | AWS CLI
 
