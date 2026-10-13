@@ -211,25 +211,3 @@ aws lambda delete-function \
 8. Concurrency: Multiple executions can run simultaneously, subject to limits.
 9. Stateless: Use S3, DynamoDB or other external services for persistent storage.
 10. Cost: Based primarily on requests and execution duration, with applicable additional charges.
-
-## 10. Practical Lab Checklist
-
-Lab Progress
-
-0/7 completed
-
-Create Lambda function using Python 3.13
-
-Add code and deploy function
-
-Create JSON test event
-
-Run test and verify response
-
-Check CloudWatch logs
-
-Invoke Lambda using AWS CLI
-
-Delete Lambda function
-
-Expected Outcome: Students can create, deploy, test, monitor, invoke and delete an AWS Lambda function using the AWS Console and AWS CLI.
