@@ -1,4 +1,4 @@
-# AWS Lambda – Training Notes & Practical Lab
+# AWS Lambda 
 
 Topics: Introduction | Architecture | Function Creation | Testing | Monitoring | AWS CLI
 
